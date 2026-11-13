@@ -11,10 +11,10 @@
  *      four productCatalog* columns populated.
  *   4. The admin notification email is dispatched to EMAIL_NOTIFY_TO and
  *      includes a catalog link to /admin/partner-applications/{id}. Here we
- *      override EMAIL_NOTIFY_TO to a comma-separated pair (studio + aizen) to
- *      exercise the multi-recipient code path added to email.ts.
+ *      override EMAIL_NOTIFY_TO to a comma-separated pair (jacky + info on
+ *      lncfood.com) to exercise the multi-recipient code path added to email.ts.
  *   5. The applicant confirmation email is dispatched to the applicant
- *      (aizen@sondrdesigns.com) with hasCatalog=true so the "Your product
+ *      (jacky@lncfood.com) with hasCatalog=true so the "Your product
  *      catalog has been received" line appears.
  *
  * Why this calls the underlying modules directly instead of POSTing to the
@@ -29,8 +29,8 @@
 
 // Override BEFORE importing src/lib/email — that module snapshots NOTIFY_TO at
 // load time. Comma-separated to verify the fan-out path.
-const RECEIVING_EMAILS = "studio@sondrdesigns.com,aizen@sondrdesigns.com";
-const APPLICANT_EMAIL = "aizen@sondrdesigns.com";
+const RECEIVING_EMAILS = "jacky@lncfood.com,info@lncfood.com";
+const APPLICANT_EMAIL = "jacky@lncfood.com";
 process.env.EMAIL_NOTIFY_TO = RECEIVING_EMAILS;
 
 import assert from "node:assert/strict";
@@ -51,7 +51,6 @@ const CATALOG_ALLOWED_MIME = new Set([
   "text/csv",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ]);
-const CATALOG_ALLOWED_EXT = /\.(pdf|xlsx|xls|csv|docx)$/i;
 const CATALOG_MIME_ERROR =
   "Catalog must be a PDF, XLSX, XLS, CSV, or DOCX file.";
 
@@ -121,7 +120,6 @@ async function run() {
   const uploadResult = await uploadBlob(catalogFile, "catalogs", {
     maxBytes: CATALOG_MAX_BYTES,
     allowedMime: CATALOG_ALLOWED_MIME,
-    allowedExt: CATALOG_ALLOWED_EXT,
     mimeError: CATALOG_MIME_ERROR,
     fallbackName: "catalog",
   });

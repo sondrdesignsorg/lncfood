@@ -8,6 +8,7 @@ import { CheckCircle2, FileText, Phone, MapPin, UtensilsCrossed, Truck, ArrowRig
 import { getBranchByZip } from "@/app/lib/territory";
 import type { Branch } from "@/app/data/locations";
 import { submitPartnerApplicationAction } from "@/lib/actions/partner-applications";
+import { resolveFileMimeType } from "@/lib/file-types";
 import { useLocale } from "@/app/components/LocaleProvider";
 
 const CATALOG_MAX_BYTES = 10 * 1024 * 1024;
@@ -19,7 +20,6 @@ const CATALOG_ALLOWED_MIME = new Set([
   "text/csv",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ]);
-const CATALOG_ALLOWED_EXT = /\.(pdf|xlsx|xls|csv|docx)$/i;
 
 function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -101,13 +101,8 @@ export default function PartnerApplication() {
       if (catalogInputRef.current) catalogInputRef.current.value = "";
       return;
     }
-    if (file.type && !CATALOG_ALLOWED_MIME.has(file.type)) {
-      setCatalogError(t.partner.form.catalogTypeError);
-      setCatalogFile(null);
-      if (catalogInputRef.current) catalogInputRef.current.value = "";
-      return;
-    }
-    if (!file.type && !CATALOG_ALLOWED_EXT.test(file.name)) {
+    const mimeType = resolveFileMimeType(file.name, file.type);
+    if (!CATALOG_ALLOWED_MIME.has(mimeType)) {
       setCatalogError(t.partner.form.catalogTypeError);
       setCatalogFile(null);
       if (catalogInputRef.current) catalogInputRef.current.value = "";

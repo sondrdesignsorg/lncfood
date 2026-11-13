@@ -22,7 +22,6 @@ const CATALOG_ALLOWED_MIME = new Set([
   "text/csv",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ]);
-const CATALOG_ALLOWED_EXT = /\.(pdf|xlsx|xls|csv|docx)$/i;
 const CATALOG_MIME_ERROR =
   "Catalog must be a PDF, XLSX, XLS, CSV, or DOCX file.";
 
@@ -151,7 +150,6 @@ export async function submitPartnerApplicationAction(
       const result = await uploadBlob(catalogRaw, "catalogs", {
         maxBytes: CATALOG_MAX_BYTES,
         allowedMime: CATALOG_ALLOWED_MIME,
-        allowedExt: CATALOG_ALLOWED_EXT,
         mimeError: CATALOG_MIME_ERROR,
         fallbackName: "catalog",
       });

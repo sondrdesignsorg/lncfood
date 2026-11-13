@@ -13,6 +13,7 @@
     "regenerate:warehouse": "tsx scripts/regenerate-warehouse-images.ts",
     "retouch:locations": "tsx scripts/retouch-location-photos.ts",
     "test:emails": "dotenv -e .env.local -- tsx scripts/test-emails.ts",
+    "check:uploads": "dotenv -e .env.local -- tsx scripts/check-uploads.ts",
     "postinstall": "prisma generate",
     "db:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "db:deploy": "dotenv -e .env.local -- prisma migrate deploy",

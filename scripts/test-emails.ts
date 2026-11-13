@@ -7,19 +7,17 @@
  *
  * Notes:
  *   - All emails (admin notifications + applicant confirmations) are routed to
- *     TEST_RECIPIENT (default: aizen@sondrdesigns.com) so a single inbox can
+ *     TEST_RECIPIENT (default: jacky@lncfood.com) so a single inbox can
  *     verify every template. Override with TEST_EMAIL_RECIPIENT env var.
  *   - EMAIL_NOTIFY_TO is overridden in-process BEFORE importing email.ts so the
  *     module-load capture of `NOTIFY_TO` picks up the test recipient.
  *   - Requires RESEND_API_KEY in .env.local. If missing, each case reports
  *     SKIPPED instead of failing.
- *   - Resend in sandbox mode (unverified sending domain) only delivers to the
- *     account-owner address. If sondrdesigns.com is not yet verified in Resend,
- *     delivery to aizen@sondrdesigns.com will be rejected by Resend regardless
- *     of what this script does.
+ *   - lncfood.com is the verified sending domain in Resend; emails send from
+ *     EMAIL_FROM (default: jacky@lncfood.com).
  */
 
-const TEST_RECIPIENT = process.env.TEST_EMAIL_RECIPIENT ?? "aizen@sondrdesigns.com";
+const TEST_RECIPIENT = process.env.TEST_EMAIL_RECIPIENT ?? "jacky@lncfood.com";
 
 // Override NOTIFY_TO before importing email.ts so admin-side emails land in the
 // same inbox as the applicant-side confirmations.

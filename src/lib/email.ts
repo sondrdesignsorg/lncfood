@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
 const resendApiKey = process.env.RESEND_API_KEY;
-const FROM = process.env.EMAIL_FROM ?? "L&C Careers <studio@sondrdesigns.com>";
+const FROM = process.env.EMAIL_FROM ?? "L&C Applications <jacky@lncfood.com>";
 
 // EMAIL_NOTIFY_TO accepts either a single address or a comma-separated list,
 // so admin notifications can fan out to multiple inboxes (e.g. client + dev).
@@ -12,7 +12,7 @@ function parseRecipients(raw: string): string | string[] {
     .filter(Boolean);
   return list.length > 1 ? list : (list[0] ?? "");
 }
-const NOTIFY_TO = parseRecipients(process.env.EMAIL_NOTIFY_TO ?? "aizen@sondrdesigns.com");
+const NOTIFY_TO = parseRecipients(process.env.EMAIL_NOTIFY_TO ?? "jacky@lncfood.com");
 
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
 

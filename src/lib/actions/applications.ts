@@ -12,6 +12,7 @@ import {
   sendApplicationNotificationEmail,
 } from "@/lib/email";
 import { branches } from "@/app/data/locations";
+import { resolveFileMimeType } from "@/lib/file-types";
 
 export type ApplicationFormState = {
   error?: string;
@@ -24,7 +25,6 @@ const RESUME_ALLOWED_MIME = new Set([
   "application/msword",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ]);
-const RESUME_ALLOWED_EXT = /\.(pdf|doc|docx)$/i;
 
 type ResumeUpload = {
   url: string;
@@ -39,15 +39,15 @@ function safeFilename(name: string) {
   return base.replace(/[^A-Za-z0-9._-]+/g, "_").slice(0, 120) || "resume";
 }
 
-function validateResume(file: File): { ok: true } | { ok: false; message: string } {
+function validateResume(
+  file: File,
+  mimeType: string,
+): { ok: true } | { ok: false; message: string } {
   if (file.size === 0) return { ok: false, message: "Resume file appears to be empty." };
   if (file.size > RESUME_MAX_BYTES) {
     return { ok: false, message: "Resume must be 5 MB or smaller." };
   }
-  if (file.type && !RESUME_ALLOWED_MIME.has(file.type)) {
-    return { ok: false, message: "Resume must be a PDF, DOC, or DOCX file." };
-  }
-  if (!file.type && !RESUME_ALLOWED_EXT.test(file.name)) {
+  if (!RESUME_ALLOWED_MIME.has(mimeType)) {
     return { ok: false, message: "Resume must be a PDF, DOC, or DOCX file." };
   }
   return { ok: true };
@@ -116,7 +116,8 @@ export async function submitApplicationAction(
   const resumeRaw = fd.get("resume");
   let resume: ResumeUpload | null = null;
   if (resumeRaw instanceof File && resumeRaw.size > 0) {
-    const check = validateResume(resumeRaw);
+    const mimeType = resolveFileMimeType(resumeRaw.name, resumeRaw.type);
+    const check = validateResume(resumeRaw, mimeType);
     if (!check.ok) {
       return {
         error: "Please fix the errors below.",
@@ -127,14 +128,14 @@ export async function submitApplicationAction(
       const filename = safeFilename(resumeRaw.name);
       const blob = await put(`resumes/${Date.now()}-${filename}`, resumeRaw, {
         access: "private",
-        contentType: resumeRaw.type || "application/octet-stream",
+        contentType: mimeType,
         addRandomSuffix: true,
       });
       resume = {
         url: blob.url,
         filename,
         size: resumeRaw.size,
-        mimeType: resumeRaw.type || "application/octet-stream",
+        mimeType,
       };
     } catch (e) {
       console.error("[applications] resume upload failed", e);

@@ -433,6 +433,25 @@ test("HTTP: admin resume download streams the private blob", async (t) => {
   const body = Buffer.from(await res.arrayBuffer()).toString("utf8");
   assert.match(body, /^%PDF-1\.4/);
 });
+
+test("HTTP: unauthenticated resume download redirects to admin login", async () => {
+  const app = await prisma.application.findFirst({
+    where: { email: `applicant.${RUN_TAG}@${TEST_EMAIL_DOMAIN}` },
+  });
+  assert.ok(app, "application row should exist for resume redirect check");
+
+  const res = await fetch(`${BASE}/admin/applications/${app.id}/resume`, {
+    redirect: "manual",
+  });
+  const location = res.headers.get("location") ?? "";
+  assert.ok(
+    res.status >= 300 && res.status < 400,
+    `expected redirect, got ${res.status}`,
+  );
+  assert.match(location, /\/admin\/login/);
+  assert.match(location, /callbackUrl=/);
+});
+
 test("HTTP: admin partner-applications list renders both vendor and buyer rows", async (t) => {
   if (!adminCookies) {
     t.skip("admin sign-in unavailable");

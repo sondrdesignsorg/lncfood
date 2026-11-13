@@ -1,4 +1,5 @@
 import { put } from "@vercel/blob";
+import { resolveFileMimeType } from "@/lib/file-types";
 
 export type FileUpload = {
   url: string;
@@ -22,7 +23,6 @@ export async function uploadBlob(
   opts: {
     maxBytes: number;
     allowedMime: Set<string>;
-    allowedExt: RegExp;
     mimeError: string;
     fallbackName?: string;
   },
@@ -31,18 +31,17 @@ export async function uploadBlob(
   if (file.size > opts.maxBytes) {
     return { error: `File must be ${(opts.maxBytes / (1024 * 1024)).toFixed(0)} MB or smaller.` };
   }
-  if (file.type && !opts.allowedMime.has(file.type)) {
-    return { error: opts.mimeError };
-  }
-  if (!file.type && !opts.allowedExt.test(file.name)) {
+
+  const filename = safeFilename(file.name, opts.fallbackName);
+  const mimeType = resolveFileMimeType(file.name, file.type);
+  if (!opts.allowedMime.has(mimeType)) {
     return { error: opts.mimeError };
   }
 
-  const filename = safeFilename(file.name, opts.fallbackName);
   try {
     const blob = await put(`${prefix}/${Date.now()}-${filename}`, file, {
       access: "private",
-      contentType: file.type || "application/octet-stream",
+      contentType: mimeType,
       addRandomSuffix: true,
     });
     return {
@@ -50,7 +49,7 @@ export async function uploadBlob(
         url: blob.url,
         filename,
         size: file.size,
-        mimeType: file.type || "application/octet-stream",
+        mimeType,
       },
     };
   } catch (e) {

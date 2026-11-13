@@ -8,6 +8,7 @@ import {
   submitApplicationAction,
   type ApplicationFormState,
 } from "@/lib/actions/applications";
+import { resolveFileMimeType } from "@/lib/file-types";
 
 const initialState: ApplicationFormState = {};
 
@@ -19,7 +20,6 @@ const RESUME_ALLOWED_MIME = new Set([
   "application/msword",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ]);
-const RESUME_ALLOWED_EXT = /\.(pdf|doc|docx)$/i;
 
 function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -59,13 +59,8 @@ export function JobApplicationForm({ jobSlug, jobTitle, branchLabel }: Props) {
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
-    if (file.type && !RESUME_ALLOWED_MIME.has(file.type)) {
-      setResumeError("Resume must be a PDF, DOC, or DOCX file.");
-      setResumeFile(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-      return;
-    }
-    if (!file.type && !RESUME_ALLOWED_EXT.test(file.name)) {
+    const mimeType = resolveFileMimeType(file.name, file.type);
+    if (!RESUME_ALLOWED_MIME.has(mimeType)) {
       setResumeError("Resume must be a PDF, DOC, or DOCX file.");
       setResumeFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
