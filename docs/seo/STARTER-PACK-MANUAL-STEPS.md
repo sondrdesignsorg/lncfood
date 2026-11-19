@@ -54,7 +54,7 @@ For **each** of the 4 distribution centers, create or claim the GBP listing:
 |---|---|---|
 | San Diego | 8724 Approach Rd, San Diego, CA 92154 | (619) 710-2030 |
 | Los Angeles (City of Industry) | 15320 Salt Lake Ave, City of Industry, CA 91745 | (626) 465-7855 |
-| Fresno | 471 S Teilman Ave, Fresno, CA 93706 | (559) 264-0298 |
+| Fresno | 471 S Teilman Ave, Fresno, CA 93706 | (559) 264-2745 |
 | San Jose | 1309 Old Bayshore Hwy, San Jose, CA 95112 | (408) 998-8211 |
 
 For each profile:

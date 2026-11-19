@@ -32,7 +32,7 @@ export const branches: Branch[] = [
     slug: "fresno",
     city: "Fresno",
     address: "471 S Teilman Ave, Fresno, CA 93706",
-    phone: "(559) 264-0298",
+    phone: "(559) 264-2745",
     lat: 36.735,
     lng: -119.7964,
   },
